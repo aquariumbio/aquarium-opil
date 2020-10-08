@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 readme = open('README.md').read()
-requirements_list = [pkg for pkg in open('requirements.txt').readlines]
+requirements_list = [pkg for pkg in open('requirements.txt').readlines()]
 
 setup(
     name='aquarium-opil',

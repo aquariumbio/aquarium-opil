@@ -1,0 +1,3 @@
+opil @ git+https://github.com/SD2E/opil.git
+owlet @ git+https://github.com/SynBioDex/Owlet.git
+pydent==1.0.3
