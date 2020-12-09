@@ -9,21 +9,21 @@ isodate==0.6.0
 jsonschema==3.2.0
 nest-asyncio==1.4.1
 networkx==2.5
-opil @ git+https://github.com/SD2E/opil.git@e33ce6c2cb333d590cea4a728feb80505df6c77e
+opil==1.0a1.post1
 owlet @ git+https://github.com/SynBioDex/Owlet.git@0e4fd815f161b28f20936ca42c32f9613f00cc45
 owlrl==5.2.1
 py==1.9.0
 pydent==1.0.3
 pyparsing==2.4.7
 pyrsistent==0.17.3
-pyshacl==0.13.3
+pyshacl==0.14.0
 python-dateutil==2.8.1
 rdflib==5.0.0
 rdflib-jsonld==0.5.0
 requests==2.24.0
 retry==0.9.2
-sbol3 @ git+https://github.com/SynBioDex/pySBOL3@ee3e33873790907abdc61617ef6e14578e032e06
+sbol3==1.0a2
 six==1.15.0
 SPARQLWrapper==1.8.5
 tqdm==4.50.2
-urllib3==1.25.10
+urllib3==1.25.11
