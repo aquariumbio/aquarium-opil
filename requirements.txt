@@ -12,7 +12,7 @@ networkx==2.5
 opil==1.0a1.post1
 owlet @ git+https://github.com/SynBioDex/Owlet.git@0e4fd815f161b28f20936ca42c32f9613f00cc45
 owlrl==5.2.1
-py==1.9.0
+py==1.10.0
 pydent==1.0.3
 pyparsing==2.4.7
 pyrsistent==0.17.3
