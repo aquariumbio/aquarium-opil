@@ -53,11 +53,7 @@ class HTCOpilGenerator():
             name="Control Type",
             description="Indicates that this condition is a control of the given type"
         ))
-        template.features.append(self.template_feature(
-            id="strain",
-            name="Strain",
-            description="URI for the strain"
-        ))
+        template.features.append(self.strain_feature())
         template.features.append(self.template_feature(
             id="inducer",
             name="Inducer",
@@ -70,6 +66,13 @@ class HTCOpilGenerator():
         ))
 
         return template
+
+    def strain_feature(self):
+        return self.template_feature(
+            id="strain",
+            name="Strain",
+            description="URI for the strain"
+        )
 
     def build_variable_component(self):
         return []
@@ -88,8 +91,21 @@ class HTCOpilGenerator():
         self.doc.add(sample_space)
         return sample_space
 
+    def flow_type(self):
+        measurement_type = opil.MeasurementType('flow')
+        measurement_type.name = "Flow Cytometry"
+        measurement_type.description = "flow measurement type which is ncit:C78806"
+        return measurement_type
+
+    def plate_reader_type(self):
+        measurement_type = opil.MeasurementType('plate_reader')
+        measurement_type.name = "Plate Reader"
+        measurement_type.description = "plate reader measurement ncit:C70661"
+
     def build_measurements(self):
-        return []
+        measurement_types = []
+        measurement_types.append(self.flow_type())
+        return measurement_types
 
     def build_parameters(self):
         return []
