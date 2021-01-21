@@ -1,4 +1,4 @@
-opil==1.0a4
-owlet @ git+https://github.com/SynBioDex/Owlet.git
+opil==1.0a6
 pydent==1.0.5
 rope==0.18.0
+tyto==1.0a0
