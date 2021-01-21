@@ -1,7 +1,8 @@
-from math import nan
+from math import nan, inf
 import opil
 import sbol3
 from sbol3 import component
+from tyto import NCIT, SBO
 
 # sample space -- jellyfish table
 # media
@@ -36,7 +37,7 @@ class HTCOpilGenerator():
         variable_components = []
 
         # TODO: is the component type correct?
-        template = sbol3.Component("htc_design", sbol3.SBOL_COMPONENT)
+        template = sbol3.Component("htc_design", SBO.functional_entity)
         template.description = "HTC Sample Design"
 
         # TODO: are there media URIs?
@@ -44,7 +45,7 @@ class HTCOpilGenerator():
             id="media",
             name="Media",
             description="URI for the media",
-            type='https://identifiers.org/ncit:C85504'
+            type=NCIT.Growth_Medium
         )
         template.features.append(design_component)
         variable = sbol3.VariableComponent(
@@ -69,7 +70,7 @@ class HTCOpilGenerator():
             id="inducer",
             name="Inducer",
             description="The inducers for the condition",
-            type='https://identifiers.org/ncit:C120268'
+            type=NCIT.Inducer
         )
         concentration = sbol3.Measure(
             nan,
@@ -77,20 +78,16 @@ class HTCOpilGenerator():
             name='inducer_concentration'
         )
         concentration.description = "Inducer concentration"
-        variable = sbol3.VariableComponent(
-            cardinality=sbol3.SBOL_ONE_OR_MORE,
-            variable=concentration
-        )
-        variable.description = "Variable for inducer concentration"
-        variable_components.append(
-            variable
-        )
+
         design_component.measures = [concentration]
         template.features.append(design_component)
+
         variable = sbol3.VariableComponent(
             cardinality=sbol3.SBOL_ONE_OR_MORE,
             variable=design_component
         )
+        # TODO: remove once pysbol is updated
+        variable.variant_measure = sbol3.OwnedObject(variable, 'http://sbols.org/v3#variantMeasure', 1, inf, initial_value=[concentration])
         variable.description = "Variable for inducer"
         variable_components.append(
             variable
@@ -100,7 +97,7 @@ class HTCOpilGenerator():
             id="antibiotic",
             name="Antibiotic",
             description="The antibiotics for the condition",
-            type='https://identifiers.org/ncit:C258'
+            type=NCIT.Antibiotic
         )
         concentration = sbol3.Measure(
             nan,
@@ -108,22 +105,19 @@ class HTCOpilGenerator():
             name='antibiotic_concentration'
         )
         concentration.description = "Antibiotic concentration"
-        variable = sbol3.VariableComponent(
-            cardinality=sbol3.SBOL_ONE_OR_MORE,
-            variable=concentration
-        )
-        variable.description = "Variable for antibiotic concentration"
-        variable_components.append(
-            variable
-        )
+
         design_component.measures = [concentration]
         template.features.append(design_component)
+
         variable = sbol3.VariableComponent(
             cardinality=sbol3.SBOL_ONE_OR_MORE,
             variable=design_component
         )
+        # TODO: remove once pysbol is updated
+        variable.variant_measure = sbol3.OwnedObject(variable, 'http://sbols.org/v3#variantMeasure', 1, inf, initial_value=[concentration])
         variable.description = "Variable for antibiotic"
         variable_components.append(variable)
+
         self.doc.add(template)
 
         sample_space = sbol3.CombinatorialDerivation(
@@ -143,21 +137,28 @@ class HTCOpilGenerator():
             id="strain",
             name="Strain",
             description="URI for the strain",
-            type='https://identifiers.org/ncit:C14419'
+            type=NCIT.Organism_Strain
         )
 
     def flow_type(self):
         measurement_type = opil.MeasurementType('flow')
         measurement_type.name = "Flow Cytometry"
         measurement_type.description = "flow measurement type which is ncit:C78806"
-        measurement_type.type_uri = "https://identifiers.org/ncit:C78806"
+        measurement_type.type = NCIT.Flow_Cytometer
+        measurement_type.maxTime = self.hours(24)
+        # TODO: not sure about this – this is strateos number
+        measurement_type.maxMeasurements = 6
         return measurement_type
 
     def plate_reader_type(self):
         measurement_type = opil.MeasurementType('plate_reader')
         measurement_type.name = "Plate Reader"
         measurement_type.description = "plate reader measurement ncit:C70661"
-        measurement_type.type_uri = "https://identifiers.org/ncit:C70661"
+        measurement_type.type = NCIT.Microplate_Reader
+        measurement_type.maxTime = self.hours(24)
+        # TODO: not sure about this – this is strateos number        
+        measurement_type.maxMeasurements = 6
+        
         return measurement_type
 
     def build_measurements(self):
@@ -166,8 +167,31 @@ class HTCOpilGenerator():
         measurement_types.append(self.plate_reader_type())
         return measurement_types
 
+    def hours(self, value):
+        return sbol3.Measure(value, OM.hour, name="{} hours".format(value))
+    
+    def build_measure(self, *, id: str, name: str, type: str):
+        parameter = opil.MeasureParameter(id)
+        parameter.name = name
+        parameter.maxTime = self.hours(24)
+        parameter.maxMeasurements = 6
+        parameter.required = True
+        return parameter
+
+
     def build_parameters(self):
-        return []
+        return [
+            ## plate reader parameters
+            # measurement type: OD, GFP, OD&GFP
+            # dilution
+            # discard plate: bool
+            # measure time
+
+            ## flow parameters
+            # calibration_required: bool
+            # discard plate: bool
+            # measure time
+        ]
 
     def build_protocol(self):
         protocol = opil.ProtocolInterface('htc')
