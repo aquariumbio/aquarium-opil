@@ -87,7 +87,8 @@ class HTCOpilGenerator():
             variable=design_component
         )
         # TODO: remove once pysbol is updated
-        variable.variant_measure = sbol3.OwnedObject(variable, 'http://sbols.org/v3#variantMeasure', 1, inf, initial_value=[concentration])
+        variable.variant_measure = sbol3.OwnedObject(
+            variable, 'http://sbols.org/v3#variantMeasure', 1, inf, initial_value=[concentration])
         variable.description = "Variable for inducer"
         variable_components.append(
             variable
@@ -114,7 +115,8 @@ class HTCOpilGenerator():
             variable=design_component
         )
         # TODO: remove once pysbol is updated
-        variable.variant_measure = sbol3.OwnedObject(variable, 'http://sbols.org/v3#variantMeasure', 1, inf, initial_value=[concentration])
+        variable.variant_measure = sbol3.OwnedObject(
+            variable, 'http://sbols.org/v3#variantMeasure', 1, inf, initial_value=[concentration])
         variable.description = "Variable for antibiotic"
         variable_components.append(variable)
 
@@ -156,9 +158,9 @@ class HTCOpilGenerator():
         measurement_type.description = "plate reader measurement ncit:C70661"
         measurement_type.type = NCIT.Microplate_Reader
         measurement_type.maxTime = self.hours(24)
-        # TODO: not sure about this – this is strateos number        
+        # TODO: not sure about this – this is strateos number
         measurement_type.maxMeasurements = 6
-        
+
         return measurement_type
 
     def build_measurements(self):
@@ -169,7 +171,7 @@ class HTCOpilGenerator():
 
     def hours(self, value):
         return sbol3.Measure(value, OM.hour, name="{} hours".format(value))
-    
+
     def build_measure(self, *, id: str, name: str, type: str):
         parameter = opil.MeasureParameter(id)
         parameter.name = name
@@ -178,16 +180,15 @@ class HTCOpilGenerator():
         parameter.required = True
         return parameter
 
-
     def build_parameters(self):
         return [
-            ## plate reader parameters
+            # plate reader parameters
             # measurement type: OD, GFP, OD&GFP
-            # dilution
+            # dilution: Optional[int] (actually restricted to a list)
             # discard plate: bool
             # measure time
 
-            ## flow parameters
+            # flow parameters
             # calibration_required: bool
             # discard plate: bool
             # measure time
