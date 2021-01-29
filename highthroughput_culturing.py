@@ -1,8 +1,7 @@
 from math import nan, inf
 import opil
 import sbol3
-from sbol3 import component
-from tyto import NCIT, SBO
+from tyto import NCIT, SBO, OM
 
 # sample space -- jellyfish table
 # media
@@ -26,11 +25,10 @@ class HTCOpilGenerator():
         self.doc = sbol3.Document()
 
     def template_feature(self, *, id: str, name: str, description: str, type: str) -> sbol3.LocalSubComponent:
-        feature = sbol3.LocalSubComponent(
-            [type], name=id)
+        feature = sbol3.LocalSubComponent([type], identity=id)
         feature.name = name
         feature.description = description
-
+        
         return feature
 
     def build_samples(self) -> sbol3.Component:
@@ -48,7 +46,7 @@ class HTCOpilGenerator():
             type=NCIT.Growth_Medium
         )
         template.features.append(design_component)
-        variable = sbol3.VariableComponent(
+        variable = sbol3.VariableFeature(
             cardinality=sbol3.SBOL_ONE_OR_MORE,
             variable=design_component
         )
@@ -57,7 +55,7 @@ class HTCOpilGenerator():
 
         design_component = self.strain_feature()
         template.features.append(design_component)
-        variable = sbol3.VariableComponent(
+        variable = sbol3.VariableFeature(
             cardinality=sbol3.SBOL_ONE,
             variable=design_component
         )
@@ -75,14 +73,14 @@ class HTCOpilGenerator():
         concentration = sbol3.Measure(
             nan,
             'http://purl.obolibrary.org/obo/UO_0000278',
-            name='inducer_concentration'
+            identity='inducer_concentration'
         )
         concentration.description = "Inducer concentration"
 
         design_component.measures = [concentration]
         template.features.append(design_component)
 
-        variable = sbol3.VariableComponent(
+        variable = sbol3.VariableFeature(
             cardinality=sbol3.SBOL_ONE_OR_MORE,
             variable=design_component
         )
@@ -103,14 +101,14 @@ class HTCOpilGenerator():
         concentration = sbol3.Measure(
             nan,
             'http://purl.obolibrary.org/obo/UO_0000278',
-            name='antibiotic_concentration'
+            identity='antibiotic_concentration'
         )
         concentration.description = "Antibiotic concentration"
 
         design_component.measures = [concentration]
         template.features.append(design_component)
 
-        variable = sbol3.VariableComponent(
+        variable = sbol3.VariableFeature(
             cardinality=sbol3.SBOL_ONE_OR_MORE,
             variable=design_component
         )
@@ -170,7 +168,7 @@ class HTCOpilGenerator():
         return measurement_types
 
     def hours(self, value):
-        return sbol3.Measure(value, OM.hour, name="{} hours".format(value))
+        return sbol3.Measure(value, OM.hour, identity="hours_{}".format(value))
 
     def build_measure(self, *, id: str, name: str, type: str):
         parameter = opil.MeasureParameter(id)
@@ -209,7 +207,7 @@ class HTCOpilGenerator():
         protocol = self.build_protocol()
         self.doc.add(protocol)
 
-        self.doc.write('jellyfish_htc.ttl', file_format='ttl')
+        self.doc.write('jellyfish_htc.xml', file_format='xml')
 
     # sample space -- jellyfish table
     # media
