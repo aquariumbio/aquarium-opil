@@ -1,4 +1,4 @@
-opil==1.0a6
-pydent==1.0.5
+opil==1.0b2
+pydent==1.0.6
 rope==0.18.0
-tyto==1.0a0
+tyto==1.0a2
