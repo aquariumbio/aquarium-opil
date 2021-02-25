@@ -17,6 +17,8 @@ from tyto import NCIT, SBO, OM
 # - concentration
 # options - may be parameters
 
+# example doc: https://docs.google.com/document/d/1M0Xw4477859-CaglaEVUuFeK5B2WmzJosuPiVVStx6U/edit#heading=h.juneem4wj3cn
+
 
 class HTCOpilGenerator():
 
@@ -28,7 +30,7 @@ class HTCOpilGenerator():
         feature = sbol3.LocalSubComponent([type], identity=id)
         feature.name = name
         feature.description = description
-        
+
         return feature
 
     def build_samples(self) -> sbol3.Component:
@@ -43,7 +45,7 @@ class HTCOpilGenerator():
             id="media",
             name="Media",
             description="URI for the media",
-            type=NCIT.Growth_Medium
+            type=NCIT.get_uri_by_term('Growth Medium')
         )
         template.features.append(design_component)
         variable = sbol3.VariableFeature(
@@ -70,9 +72,11 @@ class HTCOpilGenerator():
             description="The inducers for the condition",
             type=NCIT.Inducer
         )
+        # note: using SBO.concentration_of_an_entity_pool instead of
+        #  'http://purl.obolibrary.org/obo/UO_0000278'
         concentration = sbol3.Measure(
             nan,
-            'http://purl.obolibrary.org/obo/UO_0000278',
+            SBO.concentration_of_an_entity_pool,
             identity='inducer_concentration'
         )
         concentration.description = "Inducer concentration"
@@ -98,9 +102,11 @@ class HTCOpilGenerator():
             description="The antibiotics for the condition",
             type=NCIT.Antibiotic
         )
+        # note: using SBO.concentration_of_an_entity_pool instead of
+        #  'http://purl.obolibrary.org/obo/UO_0000278'
         concentration = sbol3.Measure(
             nan,
-            'http://purl.obolibrary.org/obo/UO_0000278',
+            SBO.concentration_of_an_entity_pool,
             identity='antibiotic_concentration'
         )
         concentration.description = "Antibiotic concentration"
@@ -126,7 +132,6 @@ class HTCOpilGenerator():
             type_uri='http://bbn.com/synbio/opil#SampleSet'
         )
         sample_space.name = "HTC culture condition design"
-        sample_space.name = "The HTC culture condition design"
         sample_space.variable_components = variable_components
         self.doc.add(sample_space)
 
@@ -137,14 +142,14 @@ class HTCOpilGenerator():
             id="strain",
             name="Strain",
             description="URI for the strain",
-            type=NCIT.Organism_Strain
+            type=NCIT.get_uri_by_term('Growth Medium')
         )
 
     def flow_type(self):
         measurement_type = opil.MeasurementType('flow')
         measurement_type.name = "Flow Cytometry"
         measurement_type.description = "flow measurement type which is ncit:C78806"
-        measurement_type.type = NCIT.Flow_Cytometer
+        measurement_type.type = NCIT.get_uri_by_term('Flow Cytometer')
         measurement_type.maxTime = self.hours(24)
         # TODO: not sure about this – this is strateos number
         measurement_type.maxMeasurements = 6
@@ -154,7 +159,7 @@ class HTCOpilGenerator():
         measurement_type = opil.MeasurementType('plate_reader')
         measurement_type.name = "Plate Reader"
         measurement_type.description = "plate reader measurement ncit:C70661"
-        measurement_type.type = NCIT.Microplate_Reader
+        measurement_type.type = NCIT.get_uri_by_term('Microplate Reader')
         measurement_type.maxTime = self.hours(24)
         # TODO: not sure about this – this is strateos number
         measurement_type.maxMeasurements = 6
