@@ -183,6 +183,16 @@ class HTCOpilGenerator():
         parameter.required = True
         return parameter
 
+    # added this b/c of 
+    def build_string_parameter(self, *, id: str, name: str, default_value: str = ''):
+        param = opil.StringParameter(id)
+        param.name = name
+        if default_value:
+            default = opil.StringValue(id + '_default')
+            default.value = default_value
+            param.default_value = default
+        return param
+
     def build_parameters(self):
         return [
             # plate reader parameters
