@@ -1,6 +1,8 @@
 from math import nan, inf
+import datetime
 import opil
 import sbol3
+from sbol3.constants import SBOL_DESCRIPTION
 from tyto import NCIT, SBO, OM
 
 # sample space -- jellyfish table
@@ -91,6 +93,7 @@ class HTCOpilGenerator():
         # TODO: remove once pysbol is updated
         variable.variant_measure = sbol3.OwnedObject(
             variable, 'http://sbols.org/v3#variantMeasure', 1, inf, initial_value=[concentration])
+
         variable.description = "Variable for inducer"
         variable_components.append(
             variable
@@ -129,7 +132,7 @@ class HTCOpilGenerator():
         sample_space = sbol3.CombinatorialDerivation(
             "culture_conditions",
             template,
-            type_uri='http://bbn.com/synbio/opil#SampleSet'
+            type_uri='http://bioprotocols.org/opil#SampleSet'
         )
         sample_space.name = "HTC culture condition design"
         sample_space.variable_components = variable_components
@@ -145,14 +148,18 @@ class HTCOpilGenerator():
             type=NCIT.get_uri_by_term('Growth Medium')
         )
 
+    def build_time_interval(self, *, min: float = 0.0, max: float = 24.0):
+        interval = opil.TimeInterval()
+        interval.minTime = opil.Measure(min, OM.hour)
+        interval.maxTime = opil.Measure(max, OM.hour)
+        return [interval]
+
     def flow_type(self):
         measurement_type = opil.MeasurementType('flow')
         measurement_type.name = "Flow Cytometry"
         measurement_type.description = "flow measurement type which is ncit:C78806"
         measurement_type.type = NCIT.get_uri_by_term('Flow Cytometer')
-        measurement_type.maxTime = self.hours(24)
-        # TODO: not sure about this – this is strateos number
-        measurement_type.maxMeasurements = 6
+        measurement_type.allowed_time = self.build_time_interval()
         return measurement_type
 
     def plate_reader_type(self):
@@ -160,7 +167,7 @@ class HTCOpilGenerator():
         measurement_type.name = "Plate Reader"
         measurement_type.description = "plate reader measurement ncit:C70661"
         measurement_type.type = NCIT.get_uri_by_term('Microplate Reader')
-        measurement_type.maxTime = self.hours(24)
+        measurement_type.allowed_time = self.build_time_interval()
         # TODO: not sure about this – this is strateos number
         measurement_type.maxMeasurements = 6
 
@@ -178,12 +185,13 @@ class HTCOpilGenerator():
     def build_measure(self, *, id: str, name: str, type: str):
         parameter = opil.MeasureParameter(id)
         parameter.name = name
-        parameter.maxTime = self.hours(24)
+        parameter.minMeasure = opil.Measure(0.0, OM.hour)
+        parameter.maxMeasure = opil.Measure(24.0, OM.hour)
         parameter.maxMeasurements = 6
         parameter.required = True
         return parameter
 
-    # added this b/c of 
+    # added this b/c of
     def build_string_parameter(self, *, id: str, name: str, default_value: str = ''):
         param = opil.StringParameter(id)
         param.name = name
@@ -193,18 +201,29 @@ class HTCOpilGenerator():
             param.default_value = default
         return param
 
+    def build_flag(self, *, id: str, name: str, description: str):
+        param = opil.BooleanParameter(id)
+        param.name = name
+        param.description = description
+        return param
+
     def build_parameters(self):
         return [
             # plate reader parameters
             # measurement type: OD, GFP, OD&GFP
             # dilution: Optional[int] (actually restricted to a list)
-            # discard plate: bool
-            # measure time
 
             # flow parameters
-            # calibration_required: bool
-            # discard plate: bool
-            # measure time
+            self.build_flag(
+                id='calibrate_cytometer',
+                name='CytometerCalibrationFlag',
+                description='Indicate whether a calibration plate should be run'
+            ),
+            self.build_flag(
+                id='discard_plate',
+                name='DiscardFlag',
+                description='Indicates whether measurement plates should be discarded after measurement'
+            )
         ]
 
     def build_protocol(self):
@@ -222,7 +241,10 @@ class HTCOpilGenerator():
         protocol = self.build_protocol()
         self.doc.add(protocol)
 
-        self.doc.write('jellyfish_htc.xml', file_format='xml')
+        today = datetime.date.today()
+        filename = "jellyfish_htc_{}.xml".format(today.strftime("%Y%m%d"))
+
+        self.doc.write(filename, file_format='xml')
 
     # sample space -- jellyfish table
     # media
