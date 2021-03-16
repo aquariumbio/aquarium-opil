@@ -28,4 +28,4 @@ six==1.15.0
 SPARQLWrapper==1.8.5
 tqdm==4.58.0
 tyto==1.0a4
-urllib3==1.26.3
+urllib3==1.26.4
