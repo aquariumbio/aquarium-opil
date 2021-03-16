@@ -2,7 +2,7 @@ from math import nan, inf
 import datetime
 import opil
 import sbol3
-from sbol3.constants import SBOL_DESCRIPTION
+from sbol3.constants import SBO_FUNCTIONAL_ENTITY, SBO_SIMPLE_CHEMICAL
 from tyto import NCIT, SBO, OM
 
 # sample space -- jellyfish table
@@ -28,10 +28,11 @@ class HTCOpilGenerator():
         sbol3.set_homespace('http://aquarium.bio/')
         self.doc = sbol3.Document()
 
-    def template_feature(self, *, id: str, name: str, description: str, type: str) -> sbol3.LocalSubComponent:
+    def template_feature(self, *, id: str, name: str, description: str, type: str, role: str) -> sbol3.LocalSubComponent:
         feature = sbol3.LocalSubComponent([type], identity=id)
         feature.name = name
         feature.description = description
+        feature.roles = [role]
 
         return feature
 
@@ -47,7 +48,8 @@ class HTCOpilGenerator():
             id="media",
             name="Media",
             description="URI for the media",
-            type=NCIT.get_uri_by_term('Growth Medium')
+            type=SBO_FUNCTIONAL_ENTITY,
+            role=NCIT.get_uri_by_term('Growth Medium')
         )
         template.features.append(design_component)
         variable = sbol3.VariableFeature(
@@ -72,7 +74,8 @@ class HTCOpilGenerator():
             id="inducer",
             name="Inducer",
             description="The inducers for the condition",
-            type=NCIT.Inducer
+            type=SBO_SIMPLE_CHEMICAL,
+            role=NCIT.Inducer
         )
         # note: using SBO.concentration_of_an_entity_pool instead of
         #  'http://purl.obolibrary.org/obo/UO_0000278'
@@ -103,7 +106,8 @@ class HTCOpilGenerator():
             id="antibiotic",
             name="Antibiotic",
             description="The antibiotics for the condition",
-            type=NCIT.Antibiotic
+            type=SBO_SIMPLE_CHEMICAL,
+            role=NCIT.Antibiotic
         )
         # note: using SBO.concentration_of_an_entity_pool instead of
         #  'http://purl.obolibrary.org/obo/UO_0000278'
@@ -129,10 +133,9 @@ class HTCOpilGenerator():
 
         self.doc.add(template)
 
-        sample_space = sbol3.CombinatorialDerivation(
+        sample_space = opil.SampleSet(
             "culture_conditions",
-            template,
-            type_uri='http://bioprotocols.org/opil#SampleSet'
+            template
         )
         sample_space.name = "HTC culture condition design"
         sample_space.variable_components = variable_components
@@ -145,7 +148,8 @@ class HTCOpilGenerator():
             id="strain",
             name="Strain",
             description="URI for the strain",
-            type=NCIT.get_uri_by_term('Growth Medium')
+            role=NCIT.get_uri_by_term('Organism Strain'),
+            type=SBO_FUNCTIONAL_ENTITY
         )
 
     def build_time_interval(self, *, min: float = 0.0, max: float = 24.0):
