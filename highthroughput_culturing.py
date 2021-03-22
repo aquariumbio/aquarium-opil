@@ -36,7 +36,7 @@ class HTCOpilGenerator():
 
         return feature
 
-    def build_samples(self) -> sbol3.Component:
+    def build_samples(self) -> opil.SampleSet:
         variable_components = []
 
         # TODO: is the component type correct?
@@ -134,11 +134,11 @@ class HTCOpilGenerator():
         self.doc.add(template)
 
         sample_space = opil.SampleSet(
-            "culture_conditions",
-            template
+            "culture_conditions"
         )
+        sample_space.template = template
         sample_space.name = "HTC culture condition design"
-        sample_space.variable_components = variable_components
+        sample_space.variable_features = variable_components
         self.doc.add(sample_space)
 
         return sample_space
@@ -234,8 +234,7 @@ class HTCOpilGenerator():
         protocol = opil.ProtocolInterface('htc')
         protocol.name = 'High-Throughput Culturing'
         protocol.description = 'Aquarium high-throughput culturing workflow'
-        protocol.sample_set = self.build_samples()
-        # protocol.allowed_samples = self.build_samples()
+        protocol.allowed_samples.append(self.build_samples())
         protocol.protocol_measurement_type = self.build_measurements()
         protocol.has_parameter = self.build_parameters()
 
