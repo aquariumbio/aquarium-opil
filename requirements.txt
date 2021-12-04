@@ -9,7 +9,7 @@ inflection==0.3.1
 isodate==0.6.0
 jsonschema==3.2.0
 nest-asyncio==1.5.1
-networkx==2.5
+networkx==2.6
 opil==1.0b3
 owlrl==5.2.1
 py==1.10.0
@@ -28,4 +28,4 @@ six==1.15.0
 SPARQLWrapper==1.8.5
 tqdm==4.58.0
 tyto==1.0a4
-urllib3==1.26.3
+urllib3==1.26.5
