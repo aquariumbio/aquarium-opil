@@ -2,3 +2,4 @@ opil==1.0b3
 pydent==1.0.7
 rope==0.18.0
 tyto==1.0a4
+setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
